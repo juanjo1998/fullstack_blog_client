@@ -1,38 +1,25 @@
-import { useState } from "react";
-import { api } from "../../../axios";
-import { useForm } from "../../hooks/useForm";
-import { useNavigate } from "react-router-dom";
-import "./Form.css";
+import { useContext } from "react";
 import { ErrorMessage } from "../../components/commons";
-
-const initialForm = {
-  username: "",
-  password: "",
-};
+import AuthContext from "../../context/AuthContext";
+import "./Form.css";
+import { Navigate } from "react-router-dom";
 
 export const LoginPage = () => {
-  const { formState, username, password, onInputChange, onInputReset } =
-    useForm(initialForm);
-  const [errors, setErrors] = useState([]);
+  const {
+    username,
+    password,
+    isAuthenticated,
+    errors,
+    onInputChange,
+    onSubmitLogin,
+  } = useContext(AuthContext);
 
-  const navigate = useNavigate();
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    // axios
-
-    try {
-      await api.post("/login", formState);
-      setErrors([]);
-      navigate("/");
-    } catch (error) {
-      setErrors(error.response.data.errors);
-    }
-  };
+  if (isAuthenticated) {
+    return <Navigate to="/" />;
+  }
 
   return (
-    <form className="form form-login" onSubmit={onSubmit}>
+    <form className="form form-login" onSubmit={onSubmitLogin}>
       {/* errors */}
 
       {errors.length > 0 && <ErrorMessage errors={errors} />}
